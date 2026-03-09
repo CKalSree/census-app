@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html ng-app="censusApp">
+<head>
+    <title>Census Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .nav-buttons { margin-bottom: 20px; }
+        button {
+            padding: 10px 15px; margin-right: 10px; cursor: pointer;
+            background-color: #007bff; color: white; border: none; border-radius: 4px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { opacity: 0.55; cursor: not-allowed; }
+        form { border: 1px solid #ddd; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input, select {
+            width: 100%; padding: 8px; margin-top: 5px;
+            border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;
+        }
+
+        /* Field error state */
+        input.field-invalid { border-color: #dc3545 !important; background-color: #fff8f8; }
+        .field-error-text { color: #dc3545; font-size: 0.78rem; font-weight: 600; margin-top: 3px; display: block; }
+
+        /* Alert banner */
+        .message {
+            padding: 12px 16px; margin: 10px 0 16px; border-radius: 4px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error   { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .message-close {
+            background: none; border: none; font-size: 1rem; cursor: pointer;
+            opacity: 0.6; color: inherit; padding: 0; margin-left: 10px;
+        }
+        .message-close:hover { opacity: 1; background: none; }
+
+        /* Record list */
+        .census-list { margin-top: 20px; }
+        .census-item {
+            padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px;
+            background-color: #f9f9f9; display: flex; justify-content: space-between; align-items: center;
+        }
+        .census-item:hover { background-color: #e9e9e9; }
+        .census-item-info { flex: 1; }
+        .census-item button { margin-left: 15px; background-color: #28a745; padding: 8px 15px; font-size: 14px; white-space: nowrap; }
+        .census-item button:hover { background-color: #218838; }
+        .display-form { background-color: #f5f5f5; }
+        .loading-text { color: #6c757d; font-size: 0.9rem; }
+
+        /* ── Search page ── */
+        .search-bar {
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
+            background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px;
+            padding: 16px; margin-bottom: 20px;
+        }
+        .search-bar .search-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 180px; }
+        .search-bar label { margin-top: 0; font-size: 0.8rem; color: #555; }
+        .search-bar input[type=text], .search-bar select {
+            padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px;
+            font-size: 0.9rem; width: 100%; box-sizing: border-box;
+        }
+        .search-bar input[type=text]:focus, .search-bar select:focus {
+            border-color: #6f42c1; outline: none; box-shadow: 0 0 0 2px rgba(111,66,193,0.15);
+        }
+        .search-actions { display: flex; gap: 8px; align-items: flex-end; }
+        .btn-search  { background-color: #6f42c1; }
+        .btn-search:hover  { background-color: #5a32a3; }
+        .btn-clear   { background-color: #6c757d; }
+        .btn-clear:hover   { background-color: #545b62; }
+
+        .search-meta {
+            font-size: 0.85rem; color: #6c757d; margin-bottom: 12px;
+        }
+        .search-meta strong { color: #343a40; }
+
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .result-table th {
+            background: #6f42c1; color: white; padding: 10px 12px;
+            text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .result-table td { padding: 11px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        .result-table tr:last-child td { border-bottom: none; }
+        .result-table tr:hover td { background-color: #f3eeff; }
+        .result-table .mono { font-family: monospace; font-size: 0.85rem; }
+
+        .highlight { background-color: #ffe066; border-radius: 2px; padding: 0 2px; }
+        .no-results { text-align: center; padding: 40px 20px; color: #999; }
+        .no-results .no-results-icon { font-size: 2rem; margin-bottom: 8px; }
+
+        .view-btn {
+            padding: 5px 12px; font-size: 0.8rem;
+            background-color: #28a745; border-radius: 4px;
+        }
+        .view-btn:hover { background-color: #218838; }
+
+        /* ── User bar ── */
+        .user-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #1b2d42; color: #e8edf3;
+            padding: 8px 20px; font-size: 0.82rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            margin: -20px -20px 20px -20px;
+        }
+        .user-bar-info { display: flex; align-items: center; gap: 8px; color: #7a8fa6; }
+        .user-bar-info strong { color: #e8edf3; }
+        .user-role-badge {
+            background: rgba(0,194,168,0.15); color: #00c2a8;
+            border: 1px solid rgba(0,194,168,0.3);
+            padding: 1px 8px; border-radius: 99px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .btn-logout {
+            padding: 5px 14px; font-size: 0.78rem; font-weight: 600;
+            background: transparent; color: #7a8fa6;
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .btn-logout:hover { color: #ff5c6a; border-color: rgba(255,92,106,0.4); background: rgba(255,92,106,0.06); }
+    </style>
+</head>
+<body ng-controller="CensusController">
+<div class="container">
+
+        <!-- ── User bar ── -->
+        <div class="user-bar">
+            <div class="user-bar-info">
+                👤 Signed in as <strong>{{currentUser.fullName || currentUser.username}}</strong>
+                <span class="user-role-badge">{{currentUser.role}}</span>
+            </div>
+            <button class="btn-logout" type="button" ng-click="logout()">Sign Out</button>
+        </div>
+
+    <h1>Census Application</h1>
+
+    <div class="nav-buttons">
+        <button type="button" ng-click="showAdd()">Add New Census</button>
+        <button type="button" ng-click="showDisplay()">View Census Records</button>
+        <button type="button" ng-click="showSearch()" style="background-color:#6f42c1;">&#128269; Search Records</button>
+    </div>
+
+    <!-- Loading -->
+    <p ng-if="loading" class="loading-text">&#9203; Loading&hellip;</p>
+
+    <!-- Alert banner -->
+    <div ng-if="message" class="message"
+         ng-class="messageType === 'success' ? 'success' : messageType === 'warning' ? 'warning' : 'error'">
+        <span>{{message}}</span>
+        <button class="message-close" type="button" ng-click="clearMessage()">&#x2715;</button>
+    </div>
+
+    <!-- ── ADD CENSUS FORM ────────────────────────────────────── -->
+    <div ng-show="showAddForm">
+        <h2>Add Census Details</h2>
+        <form name="censusForm" ng-submit="submitForm()" novalidate>
+
+            <label>First Name:</label>
+            <input type="text" name="FirstName" ng-model="census.FirstName"
+                   ng-class="{'field-invalid': fieldErrors.FirstName}"
+                   ng-change="fieldErrors.FirstName = null" required />
+            <span class="field-error-text" ng-if="fieldErrors.FirstName">&#9888; {{fieldErrors.FirstName}}</span>
+
+            <label>Last Name:</label>
+            <input type="text" name="LastName" ng-model="census.LastName"
+                   ng-class="{'field-invalid': fieldErrors.LastName}"
+                   ng-change="fieldErrors.LastName = null" required />
+            <span class="field-error-text" ng-if="fieldErrors.LastName">&#9888; {{fieldErrors.LastName}}</span>
+
+            <label>SSN:</label>
+            <input type="text" name="SSN" ng-model="census.SSN"
+                   ng-class="{'field-invalid': fieldErrors.SSN}"
+                   ng-change="fieldErrors.SSN = null"
+                   placeholder="123-45-6789" required />
+            <span class="field-error-text" ng-if="fieldErrors.SSN">&#9888; {{fieldErrors.SSN}}</span>
+
+            <label>Email Id:</label>
+            <input type="email" name="EmailId" ng-model="census.EmailId"
+                   ng-class="{'field-invalid': fieldErrors.EmailId}"
+                   ng-change="fieldErrors.EmailId = null" />
+            <span class="field-error-text" ng-if="fieldErrors.EmailId">&#9888; {{fieldErrors.EmailId}}</span>
+
+            <label>EID:</label>
+            <input type="text" name="Eid" ng-model="census.Eid"
+                   ng-class="{'field-invalid': fieldErrors.Eid}"
+                   ng-change="fieldErrors.Eid = null" />
+            <span class="field-error-text" ng-if="fieldErrors.Eid">&#9888; {{fieldErrors.Eid}}</span>
+
+            <button type="submit" style="margin-top:15px;" ng-disabled="loading">
+                {{loading ? 'Saving...' : 'Submit'}}
+            </button>
+        </form>
+    </div>
+
+    <!-- ── VIEW CENSUS RECORDS ────────────────────────────────── -->
+    <div ng-show="showDisplayForm">
+        <h2>Census Records</h2>
+
+        <!-- List view -->
+        <div class="census-list" ng-show="!selectedCensus">
+            <h3>Available Records</h3>
+
+            <div ng-if="censusList.length > 0">
+                <!--
+                    FIX: MySQL returns snake_case columns.
+                    app.js normalises all DB column names to PascalCase on load.
+                -->
+                <div class="census-item" ng-repeat="item in censusList track by $index">
+                    <div class="census-item-info">
+                        <strong>{{item.FirstName}} {{item.LastName}}</strong>
+                        &nbsp;&middot;&nbsp; SSN: {{item.SSN}}
+                        &nbsp;&middot;&nbsp; {{item.EmailId}}
+                        &nbsp;&middot;&nbsp; EID: {{item.Eid}}
+                    </div>
+                    <button type="button" ng-click="displayCensus(item.id)">View Details</button>
+                </div>
+            </div>
+
+            <div ng-if="censusList.length === 0 && !loading">
+                <p>No census records found.</p>
+            </div>
+        </div>
+
+        <!-- Detail view -->
+        <div ng-show="selectedCensus" class="display-form">
+            <h3>Census Details</h3>
+            <form>
+                <label>First Name:</label>
+                <input type="text" ng-model="selectedCensus.FirstName" disabled />
+
+                <label>Last Name:</label>
+                <input type="text" ng-model="selectedCensus.LastName" disabled />
+
+                <label>SSN:</label>
+                <input type="text" ng-model="selectedCensus.SSN" disabled />
+
+                <label>Email Id:</label>
+                <input type="email" ng-model="selectedCensus.EmailId" disabled />
+
+                <label>EID:</label>
+                <input type="text" ng-model="selectedCensus.Eid" disabled />
+
+                <button type="button" ng-click="selectedCensus = null"
+                        style="margin-top:15px; background-color:#6c757d;">
+                    &larr; Back to List
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ── SEARCH RECORDS ────────────────────────────────────── -->
+    <div ng-show="showSearchForm">
+        <h2>&#128269; Search Census Records</h2>
+
+        <!-- Search bar -->
+        <div class="search-bar">
+            <div class="search-group" style="flex:2; min-width:240px;">
+                <label>Search Term</label>
+                <input type="text"
+                       ng-model="searchQuery"
+                       ng-keyup="$event.keyCode == 13 && searchCensus()"
+                       placeholder="Type a name, SSN, email, or EID..."
+                       maxlength="100" />
+            </div>
+            <div class="search-group" style="min-width:160px;">
+                <label>Search In</label>
+                <select ng-model="searchField">
+                    <option value="all">All Fields</option>
+                    <option value="FirstName">First Name</option>
+                    <option value="LastName">Last Name</option>
+                    <option value="SSN">SSN</option>
+                    <option value="EmailId">Email</option>
+                    <option value="Eid">EID</option>
+                </select>
+            </div>
+            <div class="search-actions">
+                <button type="button" class="btn-search"
+                        ng-click="searchCensus()"
+                        ng-disabled="searchLoading || !searchQuery || searchQuery.length < 2">
+                    {{searchLoading ? 'Searching...' : 'Search'}}
+                </button>
+                <button type="button" class="btn-clear"
+                        ng-click="clearSearch()"
+                        ng-disabled="searchLoading">
+                    Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <p ng-if="searchLoading" class="loading-text">&#9203; Searching&hellip;</p>
+
+        <!-- Results meta -->
+        <div class="search-meta" ng-if="searchPerformed && !searchLoading">
+            Found <strong>{{searchResults.length}}</strong>
+            record{{searchResults.length !== 1 ? 's' : ''}} for
+            "<strong>{{searchQuery}}</strong>"
+            <span ng-if="searchField !== 'all'"> in <strong>{{searchField}}</strong></span>
+        </div>
+
+        <!-- Results table -->
+        <div ng-if="searchPerformed && searchResults.length > 0">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>SSN</th>
+                        <th>Email</th>
+                        <th>EID</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in searchResults track by $index">
+                        <td class="mono" style="color:#999;">{{$index + 1}}</td>
+                        <td>{{item.FirstName}}</td>
+                        <td>{{item.LastName}}</td>
+                        <td class="mono">&bull;&bull;&bull;&bull;&bull;&bull;{{item.SSN | limitTo:-4}}</td>
+                        <td>{{item.EmailId}}</td>
+                        <td class="mono">{{item.Eid}}</td>
+                        <td>
+                            <button type="button" class="view-btn"
+                                    ng-click="displayCensus(item.id); showDisplayForm=true; showSearchForm=false;">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- No results -->
+        <div class="no-results" ng-if="searchPerformed && searchResults.length === 0 && !searchLoading">
+            <div class="no-results-icon">&#128269;</div>
+            <p>No records found for "<strong>{{searchQuery}}</strong>".</p>
+            <p style="font-size:0.85rem; color:#aaa;">Try a different term or search across All Fields.</p>
+        </div>
+
+        <!-- Empty / not yet searched -->
+        <div class="no-results" ng-if="!searchPerformed && !searchLoading">
+            <div class="no-results-icon">&#128202;</div>
+            <p>Enter a search term above and press <strong>Search</strong> or hit Enter.</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

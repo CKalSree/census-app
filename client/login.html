@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="censusApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Census Application — Sign In</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="login.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:      #0d1b2a;
+            --navy-mid:  #1b2d42;
+            --navy-soft: #243447;
+            --accent:    #00c2a8;
+            --accent-dim:#00a18b;
+            --accent-glow: rgba(0,194,168,0.18);
+            --white:     #ffffff;
+            --off-white: #e8edf3;
+            --muted:     #7a8fa6;
+            --red:       #ff5c6a;
+            --red-bg:    rgba(255,92,106,0.1);
+            --border:    rgba(255,255,255,0.08);
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Sora', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        /* ── BACKGROUND GRID ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(0,194,168,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,194,168,0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* ── GLOW ORBS ── */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -20%; left: -10%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(0,194,168,0.08) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+            animation: drift 12s ease-in-out infinite alternate;
+        }
+        .orb2 {
+            position: fixed;
+            bottom: -15%; right: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(13,101,255,0.07) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+            animation: drift 16s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes drift {
+            from { transform: translate(0,0) scale(1); }
+            to   { transform: translate(3%,4%) scale(1.06); }
+        }
+
+        /* ── LAYOUT ── */
+        .page {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            display: flex; flex-direction: column;
+            justify-content: center; padding: 60px;
+            border-right: 1px solid var(--border);
+            animation: fadeSlideLeft 0.7s ease both;
+        }
+        @keyframes fadeSlideLeft {
+            from { opacity:0; transform: translateX(-24px); }
+            to   { opacity:1; transform: none; }
+        }
+
+        .brand {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 60px;
+        }
+        .brand-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), #0d65ff);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .brand-name {
+            font-size: 1.05rem; font-weight: 700;
+            letter-spacing: -0.01em; color: var(--white);
+        }
+
+        .left-headline {
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+        .left-headline span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .left-sub {
+            font-size: 1rem; color: var(--muted); line-height: 1.7;
+            max-width: 360px; margin-bottom: 48px;
+        }
+
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .feature-list li {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 0.875rem; color: var(--off-white);
+        }
+        .feature-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(0,194,168,0.12);
+            border: 1px solid rgba(0,194,168,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            display: flex; align-items: center; justify-content: center;
+            padding: 60px 40px;
+            animation: fadeSlideRight 0.7s ease 0.15s both;
+        }
+        @keyframes fadeSlideRight {
+            from { opacity:0; transform: translateX(24px); }
+            to   { opacity:1; transform: none; }
+        }
+
+        .login-card {
+            width: 100%; max-width: 420px;
+            background: var(--navy-mid);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 44px 40px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+        }
+
+        .card-title {
+            font-size: 1.6rem; font-weight: 700;
+            letter-spacing: -0.03em; margin-bottom: 6px;
+        }
+        .card-sub {
+            font-size: 0.875rem; color: var(--muted); margin-bottom: 32px;
+        }
+
+        /* ── ALERT ── */
+        .alert {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 14px; border-radius: 8px;
+            font-size: 0.82rem; font-weight: 500;
+            margin-bottom: 22px;
+            animation: shakeIn 0.4s ease;
+        }
+        @keyframes shakeIn {
+            0%   { transform: translateX(-6px); opacity:0; }
+            40%  { transform: translateX(4px); }
+            70%  { transform: translateX(-2px); }
+            100% { transform: none; opacity:1; }
+        }
+        .alert-error {
+            background: var(--red-bg);
+            border: 1px solid rgba(255,92,106,0.3);
+            color: #ff8a93;
+        }
+        .alert-success {
+            background: rgba(0,194,168,0.1);
+            border: 1px solid rgba(0,194,168,0.3);
+            color: var(--accent);
+        }
+        .alert-icon { font-size: 1rem; flex-shrink:0; margin-top:1px; }
+        .alert-close {
+            background: none; border: none; cursor: pointer;
+            color: inherit; opacity: 0.6; margin-left: auto;
+            font-size: 0.9rem; padding: 0;
+        }
+        .alert-close:hover { opacity: 1; }
+
+        /* ── FORM FIELDS ── */
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block; font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            color: var(--muted); margin-bottom: 8px;
+        }
+        .input-wrap { position: relative; }
+
+        .form-input {
+            width: 100%; padding: 12px 44px 12px 16px;
+            background: var(--navy-soft);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--white); font-family: inherit; font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .form-input::placeholder { color: rgba(122,143,166,0.6); }
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: rgba(36,52,71,0.9);
+        }
+        .form-input.is-error {
+            border-color: var(--red) !important;
+            box-shadow: 0 0 0 3px rgba(255,92,106,0.12) !important;
+        }
+
+        .input-icon {
+            position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem; color: var(--muted);
+            pointer-events: none;
+        }
+        .toggle-pw {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--muted); font-size: 0.9rem; padding: 2px;
+        }
+        .toggle-pw:hover { color: var(--accent); }
+
+        .field-error-text {
+            display: block; margin-top: 5px;
+            font-size: 0.75rem; color: var(--red); font-weight: 500;
+        }
+
+        /* ── SUBMIT BUTTON ── */
+        .btn-login {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--accent), #00a18b);
+            border: none; border-radius: 10px;
+            color: var(--navy); font-family: inherit;
+            font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; margin-top: 8px;
+            transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+            letter-spacing: 0.01em;
+            position: relative; overflow: hidden;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .btn-login:hover:not(:disabled)::before { opacity: 1; }
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,194,168,0.35);
+        }
+        .btn-login:active:not(:disabled) { transform: translateY(0); }
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── SPINNER ── */
+        .btn-spinner {
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .spin-ring {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid rgba(13,27,42,0.3);
+            border-top-color: var(--navy);
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── FOOTER LINK ── */
+        .card-footer {
+            text-align: center; margin-top: 28px;
+            font-size: 0.8rem; color: var(--muted);
+        }
+        .demo-hint {
+            margin-top: 24px; padding: 12px 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.78rem; color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.8;
+        }
+        .demo-hint strong { color: var(--accent); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .page { grid-template-columns: 1fr; }
+            .left-panel { display: none; }
+            .right-panel { padding: 40px 20px; }
+            .login-card { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body ng-controller="LoginController">
+
+    <div class="orb2"></div>
+
+    <div class="page">
+
+        <!-- ── LEFT BRAND PANEL ─────────────────────────── -->
+        <div class="left-panel">
+            <div class="brand">
+                <div class="brand-icon">📋</div>
+                <span class="brand-name">Census Application</span>
+            </div>
+
+            <h1 class="left-headline">
+                Manage census<br>
+                <span>data with ease.</span>
+            </h1>
+
+            <p class="left-sub">
+                A secure, centralised platform for collecting, searching,
+                and managing population census records.
+            </p>
+
+            <ul class="feature-list">
+                <li>
+                    <span class="feature-icon">➕</span>
+                    Add and manage census records
+                </li>
+                <li>
+                    <span class="feature-icon">🔍</span>
+                    Powerful search across all fields
+                </li>
+                <li>
+                    <span class="feature-icon">🔒</span>
+                    Secure, role-based access control
+                </li>
+                <li>
+                    <span class="feature-icon">⚡</span>
+                    Real-time validation and error feedback
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── RIGHT LOGIN PANEL ─────────────────────────── -->
+        <div class="right-panel">
+            <div class="login-card">
+
+                <h2 class="card-title">Welcome back</h2>
+                <p class="card-sub">Sign in to your account to continue</p>
+
+                <!-- Alert -->
+                <div class="alert"
+                     ng-if="message"
+                     ng-class="messageType === 'success' ? 'alert-success' : 'alert-error'">
+                    <span class="alert-icon">{{messageType === 'success' ? '✓' : '⚠'}}</span>
+                    <span>{{message}}</span>
+                    <button class="alert-close" ng-click="message = ''">✕</button>
+                </div>
+
+                <!-- Login Form -->
+                <ng-form name="loginForm" novalidate>
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label class="form-label">Username or Email</label>
+                        <div class="input-wrap">
+                            <input class="form-input"
+                                   type="text"
+                                   name="username"
+                                   ng-model="credentials.username"
+                                   ng-class="{'is-error': fieldErrors.username || (loginForm.username.$touched && loginForm.username.$invalid)}"
+                                   ng-change="fieldErrors.username = null; message = ''"
+                                   placeholder="Enter your username or email"
+                                   required
+                                   autocomplete="username" />
+                            <span class="input-icon">👤</span>
+                        </div>
+                        <span class="field-error-text" ng-if="fieldErrors.username">{{fieldErrors.username}}</span>
+                        <span class="field-error-text"
+                              ng-if="!fieldErrors.username && loginForm.username.$touched && loginForm.username.$error.required">
+                            Username is required
+                        </span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrap">
+                            <input class="form-input"
+                                   ng-attr-type="{{showPassword ? 'text' : 'password'}}"
+                                   name="password"
+                                   ng-model="credentials.password"
+                                   ng-class="{'is-error': fieldErrors.password || (loginForm.password.$touched && loginForm.password.$invalid)}"
+                                   ng-change="fieldErrors.password = null; message = ''"
+                                   ng-keyup="$event.keyCode === 13 && login()"
+                                   placeholder="Enter your password"
+                                   required
+                                   autocomplete="current-password" />
+                            <button type="button" class="toggle-pw" ng-click="showPassword = !showPassword"
+                                    title="{{showPassword ? 'Hide' : 'Show'}} password">
+                                {{showPassword ? '🙈' : '👁'}}
+                            </button>
+                        </div>
+                        <span class="field-error-text" ng-if="fieldErrors.password">{{fieldErrors.password}}</span>
+                        <span class="field-error-text"
+                              ng-if="!fieldErrors.password && loginForm.password.$touched && loginForm.password.$invalid">
+                            Password is required
+                        </span>
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn-login"
+                            type="button"
+                            ng-click="login()"
+                            ng-disabled="loading">
+                        <span ng-if="!loading">Sign In →</span>
+                        <span ng-if="loading" class="btn-spinner">
+                            <span class="spin-ring"></span>
+                            Signing in…
+                        </span>
+                    </button>
+
+                </ng-form>
+
+                <!-- Demo credentials hint -->
+                <div class="demo-hint">
+                    <strong>Demo credentials</strong><br>
+                    Username: <strong>admin</strong><br>
+                    Password: <strong>Admin@123</strong>
+                </div>
+
+                <div class="card-footer">
+                    Census Application &copy; {{currentYear}}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
