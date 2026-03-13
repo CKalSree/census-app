@@ -15,11 +15,11 @@ pipeline {
 
     environment { 
 
-        DB_PASSWORD  = credentials("DB_PASSWORD") 
+        DB_PASSWORD  = credentials("admin") 
 
         JWT_SECRET   = credentials("JWT_SECRET") 
 
-        NODE_ENV     = "production" 
+        NODE_ENV     = "test" 
 
         PORT         = "3001" 
 
