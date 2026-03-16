@@ -17,8 +17,6 @@ pipeline {
 
         DB_PASSWORD  = credentials("admin") 
 
-        JWT_SECRET   = credentials("JWT_SECRET") 
-
         NODE_ENV     = "test" 
 
         PORT         = "3001" 
