@@ -124,15 +124,15 @@ pipeline {
 
         // ── Stage 4: Database Migration ──────────────────── 
 
-        stage("Database Setup") { 
-
-            steps { 
-
-                sh ""mysql -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME}< sql/users_schema.sql""
-
-            } 
-
-        } 
+       stage("Database Setup") {
+           steps {
+           dir("server") {
+            sh """
+                mysql -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME} < sql/users_schema.sql
+            """
+        }
+    }
+}
 
   
 
