@@ -128,7 +128,7 @@ pipeline {
 
             steps { 
 
-                sh ""mysql -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME}< sql/users_schema.sql""" 
+                sh ""mysql -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME}< sql/users_schema.sql""
 
             } 
 
