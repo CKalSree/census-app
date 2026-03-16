@@ -203,10 +203,9 @@ pipeline {
         echo "Build #${env.BUILD_NUMBER} FAILED. Check console output."
     }
     always {
-        node {
-            cleanWs()
-        }
+        cleanWs()
     }
+	}
 }
 
 } 
