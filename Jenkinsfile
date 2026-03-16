@@ -195,27 +195,19 @@ pipeline {
 
     // ── Post-build notifications ─────────────────────────── 
 
-    post { 
-
-        success { 
-
-            echo "Build #${env.BUILD_NUMBER} succeeded!" 
-
-        } 
-
-        failure { 
-
-            echo "Build #${env.BUILD_NUMBER} FAILED. Check console output." 
-
-        } 
-
-        always { 
-
-            cleanWs()   // Clean up workspace after build 
-
-        } 
-
-    } 
+    post {
+    success {
+        echo "Build #${env.BUILD_NUMBER} succeeded!"
+    }
+    failure {
+        echo "Build #${env.BUILD_NUMBER} FAILED. Check console output."
+    }
+    always {
+        node {
+            cleanWs()
+        }
+    }
+}
 
 } 
 
