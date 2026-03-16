@@ -17,7 +17,7 @@ pipeline {
 
         DB_PASSWORD  = credentials("admin") 
 
-        NODE_ENV     = "test" 
+        NODE_ENV     = "SreenathS" 
 
         PORT         = "3001" 
 

@@ -1,0 +1,20 @@
+In watercraft and marine insurance, "affiliates" generally refer to companies within the same corporate group or authorized partners that underwrite, sell, or service policies under a main insurer's brand. Sub-affiliates or related entities in this sector often include specialized subsidiaries, parent companies, or affiliated agencies that manage specific types of risks like boat, yacht, or personal watercraft (PWC) coverage. 
+Common examples and roles of affiliates in the watercraft insurance space include:
+Specialized Underwriting Units: Large insurers often use specific affiliates for marine risks. For example, GEICO Marine Insurance Company acts as an affiliate/underwriter for boat policies, often associated with BoatUS.
+Property & Casualty Affiliates: Companies like Travelers underwrite watercraft insurance through their affiliated property casualty companies (e.g., The Travelers Indemnity Company).
+Owned Agencies and Brokers: An insurer may own or partner with specialized agencies to sell their policies. For instance, InsuraMatch, LLC, is a Travelers-owned agency that offers products from various partners.
+Parent or Partner Companies: Safeco Insurance is a part of Liberty Mutual Insurance, with products often sold through independent agents. American Modern Insurance Group is often a partner for specialty insurance, including personal watercraft.
+Industry Partners: Organizations such as the BoatUS Foundation or the U.S. Coast Guard Auxiliary are often recognized for providing safety training that can lead to premium discounts, although they are not insurers themselves. 
+These affiliates are essential for providing tailored coverage options—such as Agreed Value or Actual Cash Value policies—that differ from standard auto or home insurance. 
+
+Aon Clients Rollout 
+New Clients
+Old Clients
+All the clients without publish
+
+
+P&S Client NBA- 1 Business clients(Add 2 Tiles to see the vault documents)
+P&S Client NHA- 2 Business clients(Add 2 Tiles to see the vault documents)
+There are 2 P* S clients called NHA and NBA and each will have 2 vault folders 1-Digest and 2-Forms any documents uploaded in these folders
+can be seen under the Business Clients of NBA or NHA ,Admin needs to add 2 tiles 1-Digest and 1-Forms documents in the Client portal of each 
+business clients and should be able to see the details in the connect portal
